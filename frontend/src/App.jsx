@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { BrowserRouter,useLocation } from 'react-router-dom';
+import { BrowserRouter, useLocation } from 'react-router-dom';
 import { Routes, Route } from "react-router-dom";
 import Home from './pages/Home';
 import { CircleChevronUp } from 'lucide-react';
@@ -15,6 +15,10 @@ import EditProfile from './doctor/EditProfile';
 import Appointments from './pages/Appointments';
 import VerifyPaymentPage from '../VerifyPaymentPage';
 import VerifyServicePaymentPage from '../VerifyServicePaymentPage';
+
+// NEW: Import admin pages
+import AdminLogin from './pages/AdminLogin';
+import AdminDashboard from './pages/AdminDashboard';
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -54,6 +58,16 @@ const ScrollButton = () => {
   );
 };
 
+// NEW: Protected Route Component for Admin
+const ProtectedRoute = ({ children }) => {
+  const token = localStorage.getItem('adminToken');
+  
+  if (!token) {
+    return <Navigate to="/admin/login" replace />;
+  }
+  
+  return children;
+};
 
 const App = () => {
   // to lock horizontal overflow for all pages
@@ -65,11 +79,13 @@ const App = () => {
       document.documentElement.style.overflowX = "auto";
     };
   }, []);
+
   return (
     <>
       <ScrollToTop />
       <div className="overflow-x-hidden bg-white text-gray-900">
         <Routes>
+          {/* Existing Routes */}
           <Route path="/" element={<Home />} />
           <Route path="/doctors" element={<Doctors />} />
           <Route path="/doctors/:id" element={<DoctorDetail />} />
@@ -78,30 +94,34 @@ const App = () => {
           <Route path='/appointments' element={<Appointments />} />
           <Route path='/contact' element={<Contact />} />
 
-          {/* 4 Doctor's routes */}
+          {/* Doctor's routes */}
           <Route path='/doctor-admin/login' element={<Login />} />
           <Route path="/doctor-admin/:id" element={<DHome />} />
           <Route path="/doctor-admin/:id/appointments" element={<List />} />
           <Route path="/doctor-admin/:id/profile/edit" element={<EditProfile />} />
-          <Route
-            path='/doctor-admin/:id/profile/edit'
-            element={<EditProfile />}
+
+          {/* Payment verification routes */}
+          <Route path='/appointment/success' element={<VerifyPaymentPage />} />
+          <Route path='/appointment/cancel' element={<VerifyPaymentPage />} />
+          <Route path='/service-appointment/success' element={<VerifyServicePaymentPage />} />
+          <Route path='/service-appointment/cancel' element={<VerifyServicePaymentPage />} />
+
+          {/* NEW: Admin Routes */}
+          <Route path="/admin/login" element={<AdminLogin />} />
+          <Route 
+            path="/admin/dashboard" 
+            element={
+              <ProtectedRoute>
+                <AdminDashboard />
+              </ProtectedRoute>
+            } 
           />
-
-          {/* for the payment verifications */}
-          <Route path='/appointment/success' element={<VerifyPaymentPage/>}/>
-          <Route path='/appointment/cancel' element={<VerifyPaymentPage/>}/>
-
-           <Route path='/service-appointment/success' element={<VerifyServicePaymentPage/>}/>
-          <Route path='/service-appointment/cancel' element={<VerifyServicePaymentPage/>}/>
-
         </Routes>
       </div>
 
-      <ScrollButton/>
+      <ScrollButton />
     </>
   );
 };
 
 export default App;
-// element(element={}) to render on this particular path(Url)
