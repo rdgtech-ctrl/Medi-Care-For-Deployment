@@ -14,18 +14,24 @@ import {
 
 const appointmentRouter = express.Router();
 
-appointmentRouter.get("/", getAppointments);
-appointmentRouter.get("/confirm", confirmPayment);
+// Specific routes FIRST
 appointmentRouter.get("/stats/summary", getStats);
-
-// authentic routes
-appointmentRouter.post('/', clerkMiddleware(), requireAuth(), createAppointment);
+appointmentRouter.get("/confirm", confirmPayment);
+appointmentRouter.get("/success", (req, res) => {
+  res.status(200).json({ message: 'Appointment booked successfully' });
+});
+appointmentRouter.get('/patients/count', getRegisteredUserCount);
+appointmentRouter.get('/doctor/:doctorId', getAppointmentsByDoctor);
 appointmentRouter.get('/me', clerkMiddleware(), requireAuth(), getAppointmentsByPatient);
 
-appointmentRouter.get('/doctor/:doctorId', getAppointmentsByDoctor);
+// Authenticated POST
+appointmentRouter.post('/', clerkMiddleware(), requireAuth(), createAppointment);
 
+// ID-based routes
 appointmentRouter.post("/:id/cancel", cancelAppointment);
-appointmentRouter.get('/patients/count', getRegisteredUserCount);
 appointmentRouter.put("/:id", updateAppointment);
+
+// Generic route LAST
+appointmentRouter.get("/", getAppointments);
 
 export default appointmentRouter;

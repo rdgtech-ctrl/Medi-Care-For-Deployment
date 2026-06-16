@@ -97,7 +97,7 @@ export async function createService(req, res) {
     catch (err) {
         console.error("CreateService Error:", err);
         return res.status(500).json({
-            sucess: false,
+            success: false,
             message: "Server Error"
         })
     }
