@@ -1,7 +1,8 @@
 import React from 'react'
 import { useState, useEffect, useMemo } from 'react';
 import { pageStyles, statusClasses, keyframesStyles } from '../assets/dummyStyles'
-import { Calculator, Search, Calendar } from 'lucide-react';
+import { Calculator, Search, Calendar, BadgeIndianRupee } from 'lucide-react';
+
 
 const API_BASE = "http://localhost:4000";
 
